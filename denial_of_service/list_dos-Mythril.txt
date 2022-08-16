@@ -1,0 +1,308 @@
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: Government
+Function name: fallback
+PC address: 1182
+Estimated Gas Usage: 1765 - 36046
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: list_dos.sol:35
+
+lastTimeOfNewCredit + TWELVE_HOURS
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1fffefffa, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [SOMEGUY], function: unknown, txdata: 0x, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: Government
+Function name: fallback
+PC address: 1188
+Estimated Gas Usage: 915 - 1010
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: list_dos.sol:35
+
+if (lastTimeOfNewCredit + TWELVE_HOURS < block.timestamp) {
+             // Return money to sender
+             msg.sender.send(amount);
+             // Sends all contract money to the last creditor
+             creditorAddresses[creditorAddresses.length - 1].send(profitFromCrash);
+             corruptElite.send(this.balance);
+             // Reset contract state
+             lastCreditorPayedOut = 0;
+             lastTimeOfNewCredit = block.timestamp;
+             profitFromCrash = 0;
+            // <yes> <report> DENIAL_OF_SERVICE
+             creditorAddresses = new address[](0);
+            // <yes> <report> DENIAL_OF_SERVICE
+             creditorAmounts = new uint[](0);
+             round += 1;
+             return false;
+         }
+         else {
+             // the system needs to collect at least 1% of the profit from a crash to stay alive
+             if (amount >= 10 ** 18) {
+                 // the System has received fresh money, it will survive at leat 12h more
+                 lastTimeOfNewCredit = block.timestamp;
+                 // register the new creditor and his amount with 10% interest rate
+                 creditorAddresses.push(msg.sender);
+                 creditorAmounts.push(amount * 110 / 100);
+                 // now the money is distributed
+                 // first the corrupt elite grabs 5% - thieves!
+                 corruptElite.send(amount * 5/100);
+                 // 5% are going into the economy (they will increase the value for the person seeing the crash comming)
+                 if (profitFromCrash < 10000 * 10**18) {
+                     profitFromCrash += amount * 5/100;
+                 }
+                 // if you have a buddy in the government (and he is in the creditor list) he can get 5% of your credits.
+                 // Make a deal with him.
+                 if(buddies[buddy] >= amount) {
+                     buddy.send(amount * 5/100);
+                 }
+                 buddies[msg.sender] += amount * 110 / 100;
+                 // 90% of the money will be used to pay out old creditors
+                 if (creditorAmounts[lastCreditorPayedOut] <= address(this).balance - profitFromCrash) {
+                     creditorAddresses[lastCreditorPayedOut].send(creditorAmounts[lastCreditorPayedOut]);
+                     buddies[creditorAddresses[lastCreditorPayedOut]] -= creditorAmounts[lastCreditorPayedOut];
+                     lastCreditorPayedOut += 1;
+                 }
+                 return true;
+             }
+             else {
+                 msg.sender.send(amount);
+                 return false;
+             }
+         }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [CREATOR], function: unknown, txdata: 0x, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Government
+Function name: fallback
+PC address: 1264
+Estimated Gas Usage: 3353 - 37634
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: list_dos.sol:90
+
+lendGovernmentMoney(0)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x3, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x40400000000012, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [ATTACKER], function: unknown, txdata: 0x, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Government
+Function name: lendGovernmentMoney(address)
+PC address: 1264
+Estimated Gas Usage: 3699 - 37980
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: list_dos.sol:31
+
+function lendGovernmentMoney(address buddy) returns (bool) {
+         uint amount = msg.value;
+         // check if the system already broke down. If for 12h no new creditor gives new credit to the system it will brake down.
+         // 12h are on average = 60*60*12/12.5 = 3456
+         if (lastTimeOfNewCredit + TWELVE_HOURS < block.timestamp) {
+             // Return money to sender
+             msg.sender.send(amount);
+             // Sends all contract money to the last creditor
+             creditorAddresses[creditorAddresses.length - 1].send(profitFromCrash);
+             corruptElite.send(this.balance);
+             // Reset contract state
+             lastCreditorPayedOut = 0;
+             lastTimeOfNewCredit = block.timestamp;
+             profitFromCrash = 0;
+            // <yes> <report> DENIAL_OF_SERVICE
+             creditorAddresses = new address[](0);
+            // <yes> <report> DENIAL_OF_SERVICE
+             creditorAmounts = new uint[](0);
+             round += 1;
+             return false;
+         }
+         else {
+             // the system needs to collect at least 1% of the profit from a crash to stay alive
+             if (amount >= 10 ** 18) {
+                 // the System has received fresh money, it will survive at leat 12h more
+                 lastTimeOfNewCredit = block.timestamp;
+                 // register the new creditor and his amount with 10% interest rate
+                 creditorAddresses.push(msg.sender);
+                 creditorAmounts.push(amount * 110 / 100);
+                 // now the money is distributed
+                 // first the corrupt elite grabs 5% - thieves!
+                 corruptElite.send(amount * 5/100);
+                 // 5% are going into the economy (they will increase the value for the person seeing the crash comming)
+                 if (profitFromCrash < 10000 * 10**18) {
+                     profitFromCrash += amount * 5/100;
+                 }
+                 // if you have a buddy in the government (and he is in the creditor list) he can get 5% of your credits.
+                 // Make a deal with him.
+                 if(buddies[buddy] >= amount) {
+                     buddy.send(amount * 5/100);
+                 }
+                 buddies[msg.sender] += amount * 110 / 100;
+                 // 90% of the money will be used to pay out old creditors
+                 if (creditorAmounts[lastCreditorPayedOut] <= address(this).balance - profitFromCrash) {
+                     creditorAddresses[lastCreditorPayedOut].send(creditorAmounts[lastCreditorPayedOut]);
+                     buddies[creditorAddresses[lastCreditorPayedOut]] -= creditorAmounts[lastCreditorPayedOut];
+                     lastCreditorPayedOut += 1;
+                 }
+                 return true;
+             }
+             else {
+                 msg.sender.send(amount);
+                 return false;
+             }
+         }
+     }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0xc3f3b, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [SOMEGUY], function: lendGovernmentMoney(address), txdata: 0xd95a2d42, value: 0x0
+
+==== Unchecked return value from external call. ====
+SWC ID: 104
+Severity: Medium
+Contract: Government
+Function name: fallback
+PC address: 2876
+Estimated Gas Usage: 2096 - 36377
+The return value of a message call is not checked.
+External calls return a boolean value. If the callee halts with an exception, 'false' is returned and execution continues in the caller. The caller should check whether an exception happened and react accordingly to avoid unexpected behavior. For example it is often desirable to wrap external calls in require() so the transaction is reverted if the call fails.
+--------------------
+In file: list_dos.sol:82
+
+msg.sender.send(amount)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [SOMEGUY], function: lendGovernmentMoney(address), txdata: 0xd95a2d42, value: 0x0
+Caller: [CREATOR], function: unknown, txdata: 0x01010101, value: 0x0
+
+==== Unchecked return value from external call. ====
+SWC ID: 104
+Severity: Medium
+Contract: Government
+Function name: lendGovernmentMoney(address)
+PC address: 2876
+Estimated Gas Usage: 2176 - 36738
+The return value of a message call is not checked.
+External calls return a boolean value. If the callee halts with an exception, 'false' is returned and execution continues in the caller. The caller should check whether an exception happened and react accordingly to avoid unexpected behavior. For example it is often desirable to wrap external calls in require() so the transaction is reverted if the call fails.
+--------------------
+In file: list_dos.sol:82
+
+msg.sender.send(amount)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x100000000000003, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [SOMEGUY], function: lendGovernmentMoney(address), txdata: 0xd95a2d42, value: 0x0
+Caller: [CREATOR], function: lendGovernmentMoney(address), txdata: 0xd95a2d42, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Government
+Function name: creditorAddresses(uint256)
+PC address: 3344
+Estimated Gas Usage: 1212 - 1307
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: list_dos.sol:16
+
+address[] public creditorAddresses
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [CREATOR], function: creditorAddresses(uint256), txdata: 0xce43b0c0, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Government
+Function name: creditorAmounts(uint256)
+PC address: 3548
+Estimated Gas Usage: 1278 - 1373
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: list_dos.sol:17
+
+uint[] public creditorAmounts
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [CREATOR], function: creditorAmounts(uint256), txdata: 0xf42d1d30, value: 0x0
+
+

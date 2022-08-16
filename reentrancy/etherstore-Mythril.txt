@@ -1,0 +1,152 @@
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: EtherStore
+Function name: withdrawFunds(uint256)
+PC address: 574
+Estimated Gas Usage: 14691 - 89732
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: etherstore.sol:25
+
+lastWithdrawTime[msg.sender] + 1 weeks
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x421410400028ff7f9, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x49400000000000003, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [ATTACKER], function: withdrawFunds(uint256), txdata: 0x155dd5ee, value: 0x0
+Caller: [ATTACKER], function: withdrawFunds(uint256), txdata: 0x155dd5ee, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: EtherStore
+Function name: withdrawFunds(uint256)
+PC address: 583
+Estimated Gas Usage: 2870 - 3345
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: etherstore.sol:25
+
+require(now >= lastWithdrawTime[msg.sender] + 1 weeks)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0xbbfa9, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x1, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [ATTACKER], function: withdrawFunds(uint256), txdata: 0x155dd5ee, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: EtherStore
+Function name: withdrawFunds(uint256)
+PC address: 628
+Estimated Gas Usage: 14691 - 89732
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: etherstore.sol:27
+
+msg.sender.call.value(_weiToWithdraw)()
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1010c00020dbf3b, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [ATTACKER], function: withdrawFunds(uint256), txdata: 0x155dd5ee, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: EtherStore
+Function name: withdrawFunds(uint256)
+PC address: 712
+Estimated Gas Usage: 14691 - 89732
+Read of persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: etherstore.sol:28
+
+balances[msg.sender] -= _weiToWithdraw
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1410c00020dbf39, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [ATTACKER], function: withdrawFunds(uint256), txdata: 0x155dd5ee, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: EtherStore
+Function name: withdrawFunds(uint256)
+PC address: 719
+Estimated Gas Usage: 14691 - 89732
+Write to persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: etherstore.sol:28
+
+balances[msg.sender] -= _weiToWithdraw
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1410c00020dbf39, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [ATTACKER], function: withdrawFunds(uint256), txdata: 0x155dd5ee, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: EtherStore
+Function name: withdrawFunds(uint256)
+PC address: 787
+Estimated Gas Usage: 14691 - 89732
+Write to persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: etherstore.sol:29
+
+lastWithdrawTime[msg.sender] = now
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1410c00020dbf39, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [ATTACKER], function: withdrawFunds(uint256), txdata: 0x155dd5ee, value: 0x0
+
+

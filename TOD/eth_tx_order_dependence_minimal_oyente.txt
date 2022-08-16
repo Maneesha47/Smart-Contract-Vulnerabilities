@@ -1,0 +1,21 @@
+root@d190ca267872:/oyente/oyente# python oyente.py -s dataset/front_running/eth_tx_order_dependence_minimal.sol 
+WARNING:root:You are using evm version 1.8.2. The supported version is 1.7.3
+WARNING:root:You are using solc version 0.4.21, The latest supported version is 0.4.19
+INFO:root:contract dataset/front_running/eth_tx_order_dependence_minimal.sol:EthTxOrderDependenceMinimal:
+INFO:symExec:	============ Results ===========
+INFO:symExec:	  EVM Code Coverage: 			 98.3%
+INFO:symExec:	  Integer Underflow: 			 False
+INFO:symExec:	  Integer Overflow: 			 False
+INFO:symExec:	  Parity Multisig Bug 2: 		 False
+INFO:symExec:	  Callstack Depth Attack Vulnerability:  False
+INFO:symExec:	  Transaction-Ordering Dependence (TOD): True
+INFO:symExec:	  Timestamp Dependency: 		 False
+INFO:symExec:	  Re-Entrancy Vulnerability: 		 False
+INFO:symExec:Flow1
+dataset/front_running/eth_tx_order_dependence_minimal.sol:23:9: Warning: Transaction-Ordering Dependency.
+        owner.transfer(reward)
+Flow2
+dataset/front_running/eth_tx_order_dependence_minimal.sol:31:9: Warning: Transaction-Ordering Dependency.
+        msg.sender.transfer(reward)
+INFO:symExec:	====== Analysis Completed ======
+

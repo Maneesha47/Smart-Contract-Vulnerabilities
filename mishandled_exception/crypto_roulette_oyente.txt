@@ -1,0 +1,29 @@
+root@d190ca267872:/oyente/oyente# python oyente.py -s dataset/other/crypto_roulette.sol 
+WARNING:root:You are using evm version 1.8.2. The supported version is 1.7.3
+WARNING:root:You are using solc version 0.4.21, The latest supported version is 0.4.19
+INFO:root:contract dataset/other/crypto_roulette.sol:CryptoRoulette:
+INFO:symExec:	============ Results ===========
+INFO:symExec:	  EVM Code Coverage: 			 63.4%
+INFO:symExec:	  Integer Underflow: 			 False
+INFO:symExec:	  Integer Overflow: 			 True
+INFO:symExec:	  Parity Multisig Bug 2: 		 False
+INFO:symExec:	  Callstack Depth Attack Vulnerability:  False
+INFO:symExec:	  Transaction-Ordering Dependence (TOD): False
+INFO:symExec:	  Timestamp Dependency: 		 False
+INFO:symExec:	  Re-Entrancy Vulnerability: 		 False
+INFO:symExec:dataset/other/crypto_roulette.sol:14:1: Warning: Integer Overflow.
+contract CryptoRoulette {
+^
+Spanning multiple lines.
+Integer Overflow occurs if:
+    number = 2
+    betPrice = 0
+dataset/other/crypto_roulette.sol:25:5: Warning: Integer Overflow.
+    Game[] public gamesPlayed
+dataset/other/crypto_roulette.sol:43:9: Warning: Integer Overflow.
+        gamesPlayed.push(game)
+Integer Overflow occurs if:
+    number = 0
+    betPrice = 0
+INFO:symExec:	====== Analysis Completed ======
+

@@ -1,0 +1,111 @@
+==== Unchecked return value from external call. ====
+SWC ID: 104
+Severity: Medium
+Contract: theRun
+Function name: fallback
+PC address: 884
+Estimated Gas Usage: 1202 - 35483
+The return value of a message call is not checked.
+External calls return a boolean value. If the callee halts with an exception, 'false' is returned and execution continues in the caller. The caller should check whether an exception happened and react accordingly to avoid unexpected behavior. For example it is often desirable to wrap external calls in require() so the transaction is reverted if the call fails.
+--------------------
+In file: run.sol:45
+
+msg.sender.send(msg.value)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x2, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x370003a003, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [CREATOR], function: GetAndReduceFeesByFraction(uint256), txdata: 0xc8edf65e, value: 0x0
+Caller: [ATTACKER], function: unknown, txdata: 0x01010101, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: theRun
+Function name: PlayerInfo(uint256)
+PC address: 1213
+Estimated Gas Usage: 1903 - 1998
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: run.sol:163
+
+function PlayerInfo(uint id) constant returns(address Address, uint Payout, bool UserPaid) {
+    if (id <= players.length) {
+        Address = players[id].addr;
+        Payout = players[id].payout / 1 wei;
+        UserPaid=players[id].paid;
+    }
+}
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x2, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [SOMEGUY], function: PlayerInfo(uint256), txdata: 0x63aea3e0, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: theRun
+Function name: NextPayout()
+PC address: 1646
+Estimated Gas Usage: 1896 - 1991
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: run.sol:142
+
+function NextPayout() constant returns(uint NextPayout) {
+    NextPayout = players[Payout_id].payout /  1 wei;
+}
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x3, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [ATTACKER], function: NextPayout(), txdata: 0xa88c5ef7, value: 0x0
+
+==== Unchecked return value from external call. ====
+SWC ID: 104
+Severity: Medium
+Contract: theRun
+Function name: GetAndReduceFeesByFraction(uint256)
+PC address: 1894
+Estimated Gas Usage: 17005 - 91946
+The return value of a message call is not checked.
+External calls return a boolean value. If the callee halts with an exception, 'false' is returned and execution continues in the caller. The caller should check whether an exception happened and react accordingly to avoid unexpected behavior. For example it is often desirable to wrap external calls in require() so the transaction is reverted if the call fails.
+--------------------
+In file: run.sol:136
+
+admin.send(fees / 1000 * p)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [CREATOR], function: GetAndReduceFeesByFraction(uint256), txdata: 0xc8edf65e, value: 0x0
+Caller: [CREATOR], function: GetAndReduceFeesByFraction(uint256), txdata: 0xc8edf65e, value: 0x0
+
+

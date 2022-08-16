@@ -1,0 +1,27 @@
+==== Unprotected Selfdestruct ====
+SWC ID: 106
+Severity: High
+Contract: SuicideMultiTxFeasible
+Function name: run(uint256)
+PC address: 233
+Estimated Gas Usage: 1036 - 1131
+Any sender can cause the contract to self-destruct.
+Any sender can trigger execution of the SELFDESTRUCT instruction to destroy this contract account and withdraw its balance to an arbitrary address. Review the transaction trace generated for this issue and make sure that appropriate security controls are in place to prevent unrestricted access.
+--------------------
+In file: suicide_multitx_feasible.sol:16
+
+selfdestruct(msg.sender)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x3, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [ATTACKER], function: init(), txdata: 0xe1c7392a, value: 0x0
+Caller: [ATTACKER], function: run(uint256), txdata: 0xa444f5e9, value: 0x0
+
+

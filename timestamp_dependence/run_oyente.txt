@@ -1,0 +1,83 @@
+root@d190ca267872:/oyente/oyente# python oyente.py -s dataset/time_manipulation/run.sol      
+WARNING:root:You are using evm version 1.8.2. The supported version is 1.7.3
+WARNING:root:You are using solc version 0.4.21, The latest supported version is 0.4.19
+INFO:root:contract dataset/time_manipulation/run.sol:theRun:
+INFO:symExec:	============ Results ===========
+INFO:symExec:	  EVM Code Coverage: 			 52.3%
+INFO:symExec:	  Integer Underflow: 			 True
+INFO:symExec:	  Integer Overflow: 			 True
+INFO:symExec:	  Parity Multisig Bug 2: 		 False
+INFO:symExec:	  Callstack Depth Attack Vulnerability:  True
+INFO:symExec:	  Transaction-Ordering Dependence (TOD): True
+INFO:symExec:	  Timestamp Dependency: 		 False
+INFO:symExec:	  Re-Entrancy Vulnerability: 		 False
+INFO:symExec:dataset/time_manipulation/run.sol:135:24: Warning: Integer Underflow.
+        if (fees == 0) feeFrac-=1
+Integer Underflow occurs if:
+    feeFrac = 0
+    admin = 0
+    fees = 0
+dataset/time_manipulation/run.sol:172:17: Warning: Integer Underflow.
+    QueueSize = players.length - Payout_id
+Integer Underflow occurs if:
+    players.length = 0
+    Payout_id = 1
+dataset/time_manipulation/run.sol:130:9: Warning: Integer Underflow.
+        feeFrac-=1
+Integer Underflow occurs if:
+    fees = 57896044618658097711785492504343953926634992332820282019728792003956564819967
+    feeFrac = 0
+    admin = 0
+INFO:symExec:dataset/time_manipulation/run.sol:167:18: Warning: Integer Overflow.
+        UserPaid=players[id].paid
+Integer Overflow occurs if:
+    id = 33554427
+    players.length = 115792089237316195423570985008687907851908855197956810185604085578185788358656
+dataset/time_manipulation/run.sol:143:18: Warning: Integer Overflow.
+    NextPayout = players[Payout_id]
+Integer Overflow occurs if:
+    Payout_id = 115792089237316195423570985008687907853269984665640564039457575000713874898943
+    players[Payout_id] = 115792089237316195423570985008687907853269984665640564039457575000713874898944
+dataset/time_manipulation/run.sol:143:18: Warning: Integer Overflow.
+    NextPayout = players[Payout_id].payout
+Integer Overflow occurs if:
+    Payout_id = 0
+    players[Payout_id] = 1
+dataset/time_manipulation/run.sol:166:18: Warning: Integer Overflow.
+        Payout = players[id]
+Integer Overflow occurs if:
+    id = 33554427
+    players.length = 115792089237316195423570985008687907851908855197956810185604085578185788358656
+dataset/time_manipulation/run.sol:167:18: Warning: Integer Overflow.
+        UserPaid=players[id]
+Integer Overflow occurs if:
+    id = 33554427
+    players.length = 115792089237316195423570985008687907851908855197956810185604085578185788358656
+dataset/time_manipulation/run.sol:166:18: Warning: Integer Overflow.
+        Payout = players[id].payout
+Integer Overflow occurs if:
+    id = 33554427
+    players.length = 115792089237316195423570985008687907851908855197956810185604085578185788358656
+dataset/time_manipulation/run.sol:165:19: Warning: Integer Overflow.
+        Address = players[id]
+Integer Overflow occurs if:
+    id = 33554427
+    players.length = 115792089237316195423570985008687907851908855197956810185604085578185788358656
+INFO:symExec:dataset/time_manipulation/run.sol:49:21: Warning: Callstack Depth Attack Vulnerability.
+                    msg.sender.send(msg.value- (20 ether))
+dataset/time_manipulation/run.sol:129:9: Warning: Callstack Depth Attack Vulnerability.
+        admin.send(fees)
+dataset/time_manipulation/run.sol:89:21: Warning: Callstack Depth Attack Vulnerability.
+                    players[Payout_id].addr.send(Last_Payout)
+dataset/time_manipulation/run.sol:136:9: Warning: Callstack Depth Attack Vulnerability.
+        admin.send(fees / 1000 * p)
+dataset/time_manipulation/run.sol:80:25: Warning: Callstack Depth Attack Vulnerability.
+                        msg.sender.send(WinningPot)
+INFO:symExec:Flow1
+dataset/time_manipulation/run.sol:45:21: Warning: Transaction-Ordering Dependency.
+                    msg.sender.send(msg.value)
+Flow2
+dataset/time_manipulation/run.sol:129:9: Warning: Transaction-Ordering Dependency.
+        admin.send(fees)
+INFO:symExec:	====== Analysis Completed ======
+

@@ -1,0 +1,78 @@
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: Roulette
+Function name: fallback
+PC address: 99
+Estimated Gas Usage: 888 - 983
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: roulette.sol:13
+
+require(now != pastBlockTime)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x500800000002, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [SOMEGUY], function: unknown, txdata: 0x, value: 0x8ac7230489e80000
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: Roulette
+Function name: fallback
+PC address: 132
+Estimated Gas Usage: 5957 - 26052
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: roulette.sol:16
+
+if(now % 15 == 0) { // winner
+            msg.sender.transfer(this.balance);
+        }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x2000, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [SOMEGUY], function: unknown, txdata: 0x, value: 0x8ac7230489e80000
+
+==== Unprotected Ether Withdrawal ====
+SWC ID: 105
+Severity: High
+Contract: Roulette
+Function name: fallback
+PC address: 203
+Estimated Gas Usage: 7521 - 61802
+Any sender can withdraw Ether from the contract account.
+Arbitrary senders other than the contract creator can profitably extract Ether from the contract account. Verify the business logic carefully and make sure that appropriate security controls are in place to prevent unexpected loss of funds.
+--------------------
+In file: roulette.sol:17
+
+msg.sender.transfer(this.balance)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x24, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x9455bd8096068140, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x1
+Caller: [ATTACKER], function: unknown, txdata: 0x00404001, value: 0x8ac7230489e80000
+
+

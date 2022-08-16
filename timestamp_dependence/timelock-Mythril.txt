@@ -1,0 +1,78 @@
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: TimeLock
+Function name: withdraw()
+PC address: 540
+Estimated Gas Usage: 1973 - 2448
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: timelock.sol:21
+
+require(now > lockTime[msg.sender])
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0xc0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [CREATOR], function: deposit(), txdata: 0xd0e30db0, value: 0x1
+Caller: [CREATOR], function: withdraw(), txdata: 0x3ccfd60b, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: TimeLock
+Function name: increaseLockTime(uint256)
+PC address: 822
+Estimated Gas Usage: 6157 - 26442
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: timelock.sol:16
+
+lockTime[msg.sender] += _secondsToIncrease
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x21c10c00000fb7ba, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x82000, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [ATTACKER], function: deposit(), txdata: 0xd0e30db0, value: 0x0
+Caller: [ATTACKER], function: increaseLockTime(uint256), txdata: 0x79af55e410, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: TimeLock
+Function name: deposit()
+PC address: 938
+Estimated Gas Usage: 11226 - 51701
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: timelock.sol:11
+
+now + 1 weeks
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1000000000e33fd, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x2, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [ATTACKER], function: deposit(), txdata: 0xd0e30db0, value: 0x0
+
+

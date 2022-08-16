@@ -1,0 +1,58 @@
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Rubixi
+Function name: nextPayoutWhenPyramidBalanceTotalsApproximately()
+PC address: 1727
+Estimated Gas Usage: 1830 - 1925
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: rubixi.sol:132
+
+function nextPayoutWhenPyramidBalanceTotalsApproximately() constant returns(uint balancePayout) {
+                balancePayout = participants[payoutOrder].payout / 1 ether;
+        }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [CREATOR], function: nextPayoutWhenPyramidBalanceTotalsApproximately(), txdata: 0x57d4021b, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Rubixi
+Function name: participantDetails(uint256)
+PC address: 2147
+Estimated Gas Usage: 2032 - 2127
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: rubixi.sol:148
+
+function participantDetails(uint orderInPyramid) constant returns(address Address, uint Payout) {
+                if (orderInPyramid <= participants.length) {
+                        Address = participants[orderInPyramid].etherAddress;
+                        Payout = participants[orderInPyramid].payout / 1 ether;
+                }
+        }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [CREATOR], function: participantDetails(uint256), txdata: 0x9dbc4f9b, value: 0x0
+
+

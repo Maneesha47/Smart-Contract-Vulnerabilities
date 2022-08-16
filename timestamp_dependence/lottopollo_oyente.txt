@@ -1,0 +1,19 @@
+root@d190ca267872:/oyente/oyente# python oyente.py -s dataset/time_manipulation/lottopollo.sol          
+WARNING:root:You are using evm version 1.8.2. The supported version is 1.7.3
+WARNING:root:You are using solc version 0.4.21, The latest supported version is 0.4.19
+INFO:root:contract dataset/time_manipulation/lottopollo.sol:lottopollo:
+INFO:symExec:	============ Results ===========
+INFO:symExec:	  EVM Code Coverage: 			 55.6%
+INFO:symExec:	  Integer Underflow: 			 False
+INFO:symExec:	  Integer Overflow: 			 False
+INFO:symExec:	  Parity Multisig Bug 2: 		 False
+INFO:symExec:	  Callstack Depth Attack Vulnerability:  True
+INFO:symExec:	  Transaction-Ordering Dependence (TOD): False
+INFO:symExec:	  Timestamp Dependency: 		 False
+INFO:symExec:	  Re-Entrancy Vulnerability: 		 False
+INFO:symExec:dataset/time_manipulation/lottopollo.sol:10:7: Warning: Callstack Depth Attack Vulnerability.
+      msg.sender.send( msg.value )
+dataset/time_manipulation/lottopollo.sol:13:9: Warning: Callstack Depth Attack Vulnerability.
+        leader.send( this.balance )
+INFO:symExec:	====== Analysis Completed ======
+

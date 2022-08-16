@@ -1,0 +1,76 @@
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: Token
+Function name: transfer(address,uint256)
+PC address: 469
+Estimated Gas Usage: 13126 - 54072
+The arithmetic operator can underflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: token.sol:20
+
+balances[msg.sender] - _value
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x3f2, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [CREATOR], function: transfer(address,uint256), txdata: 0xa9059cbb000000000000000000000000affeaffeaffeaffeaffeaffeaffeaffe04fe802041, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: Token
+Function name: transfer(address,uint256)
+PC address: 551
+Estimated Gas Usage: 13126 - 54072
+The arithmetic operator can underflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: token.sol:22
+
+balances[msg.sender] -= _value
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x3f2, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [CREATOR], function: transfer(address,uint256), txdata: 0xa9059cbb000000000000000000000000affeaffeaffeaffeaffeaffeaffeaffe04fe802041, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: Token
+Function name: transfer(address,uint256)
+PC address: 627
+Estimated Gas Usage: 13126 - 54072
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: token.sol:23
+
+balances[_to] += _value
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [CREATOR], function: transfer(address,uint256), txdata: 0xa9059cbb000000000000000000000000affeaffeaffeaffeaffeaffeaffeaffeaffeaffe80, value: 0x0
+
+

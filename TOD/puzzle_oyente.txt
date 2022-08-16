@@ -1,0 +1,33 @@
+root@d190ca267872:/oyente/oyente# python oyente.py -s dataset/puzzle.sol 
+WARNING:root:You are using evm version 1.8.2. The supported version is 1.7.3
+WARNING:root:You are using solc version 0.4.21, The latest supported version is 0.4.19
+INFO:root:contract dataset/puzzle.sol:Puzzle:
+INFO:symExec:	============ Results ===========
+INFO:symExec:	  EVM Code Coverage: 			 59.6%
+INFO:symExec:	  Integer Underflow: 			 True
+INFO:symExec:	  Integer Overflow: 			 False
+INFO:symExec:	  Parity Multisig Bug 2: 		 False
+INFO:symExec:	  Callstack Depth Attack Vulnerability:  True
+INFO:symExec:	  Transaction-Ordering Dependence (TOD): True
+INFO:symExec:	  Timestamp Dependency: 		 False
+INFO:symExec:	  Re-Entrancy Vulnerability: 		 False
+INFO:symExec:dataset/puzzle.sol:3:1: Warning: Integer Underflow.
+contract Puzzle{
+^
+Spanning multiple lines.
+Integer Underflow occurs if:
+    owner = 0
+    reward = 57896044618658097711785492504343953926634992332820282019728792003956564819968
+    diff = 1
+dataset/puzzle.sol:8:2: Warning: Integer Underflow.
+	bytes public solution
+INFO:symExec:dataset/puzzle.sol:21:4: Warning: Callstack Depth Attack Vulnerability.
+			owner.send(reward)
+INFO:symExec:Flow1
+dataset/puzzle.sol:28:6: Warning: Transaction-Ordering Dependency.
+					msg.sender.send(reward)
+Flow2
+dataset/puzzle.sol:21:4: Warning: Transaction-Ordering Dependency.
+			owner.send(reward)
+INFO:symExec:	====== Analysis Completed ======
+

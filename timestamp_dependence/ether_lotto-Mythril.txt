@@ -1,0 +1,110 @@
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: EtherLotto
+Function name: play()
+PC address: 288
+Estimated Gas Usage: 174 - 269
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: ether_lotto.sol:28
+
+function play() payable {
+
+        // Participants must spend some fixed ether before playing lottery.
+        assert(msg.value == TICKET_AMOUNT);
+
+        // Increase pot for each participant.
+        pot += msg.value;
+
+        // Compute some *almost random* value for selecting winner from current transaction.
+        // <yes> <report> TIME_MANIPULATION
+        var random = uint(sha3(block.timestamp)) % 2;
+
+        // Distribution: 50% of participants will be winners.
+        if (random == 0) {
+
+            // Send fee to bank account.
+            bank.transfer(FEE_AMOUNT);
+
+            // Send jackpot to winner.
+            msg.sender.transfer(pot - FEE_AMOUNT);
+
+            // Restart jackpot.
+            pot = 0;
+        }
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x3, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [ATTACKER], function: play(), txdata: 0x93e84cd9, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: EtherLotto
+Function name: play()
+PC address: 354
+Estimated Gas Usage: 6162 - 26538
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: ether_lotto.sol:41
+
+if (random == 0) {
+
+            // Send fee to bank account.
+            bank.transfer(FEE_AMOUNT);
+
+            // Send jackpot to winner.
+            msg.sender.transfer(pot - FEE_AMOUNT);
+
+            // Restart jackpot.
+            pot = 0;
+        }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x4204040900011108, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [SOMEGUY], function: play(), txdata: 0x93e84cd9, value: 0xa
+
+==== Multiple Calls in a Single Transaction ====
+SWC ID: 113
+Severity: Low
+Contract: EtherLotto
+Function name: play()
+PC address: 511
+Estimated Gas Usage: 14447 - 123525
+Multiple calls are executed in the same transaction.
+This call is executed following another call within the same transaction. It is possible that the call never gets executed if a prior call fails permanently. This might be caused intentionally by a malicious callee. If possible, refactor the code such that each transaction only executes one external call or make sure that all callees can be trusted (i.e. they’re part of your own codebase).
+--------------------
+In file: ether_lotto.sol:47
+
+msg.sender.transfer(pot - FEE_AMOUNT)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x31de6ffc1fffc7f78, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , value: 0x0
+Caller: [SOMEGUY], function: play(), txdata: 0x93e84cd9, value: 0xa
+
+

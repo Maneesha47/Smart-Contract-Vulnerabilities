@@ -1,1 +1,1 @@
-# Smart-Contract-Vulnerabilities
+# Verification of Smart Contract Vulnerabilities
